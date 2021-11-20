@@ -5,8 +5,7 @@
 #include <stdbool.h>
 #include <iostream>
 #include <vector>
-
-//compilar g++ minesweeper.cpp -w -lSDL2 -o mine
+#include "mine_header.h"
 
 SDL_Event event;
 SDL_Window *window; // Declare a pointer
