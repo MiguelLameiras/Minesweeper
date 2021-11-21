@@ -6,14 +6,29 @@
 
 using namespace std;
 
-void Delay(unsigned int Sec)
+int cores[14][3] = {{11, 120, 79}, {10, 106, 70}, {8, 93, 62}, {7, 80, 53}, {6, 67, 44}, {5, 53, 35}, {4, 40, 26}, {15, 166, 110}, {49, 109, 14}, {29, 64, 8}, {26, 57, 7}, {22, 50, 6}, {19, 43, 5}, {16, 36, 4}};
+
+Game::Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_Surface *screenSurface_, SDL_Surface *background_)
 {
-    clock_t ticks1 = clock(), ticks2 = ticks1;
-    while ((ticks2 / CLOCKS_PER_SEC - ticks1 / CLOCKS_PER_SEC) < Sec)
-        ticks2 = clock();
+    event = event_;
+    window = window_;
+    renderer = renderer_;
+    screenSurface = screenSurface_;
+    background = background_;
 }
 
-int randomNum(int nr_min, int nr_max)
+void Game::Delay(int milliseconds)
+{
+    long pause;
+    clock_t now,then;
+
+    pause = milliseconds*(CLOCKS_PER_SEC/1000);
+    now = then = clock();
+    while( (now-then) < pause )
+        now = clock();
+}
+
+int Game::randomNum(int nr_min, int nr_max)
 {
     //gerar número aleatórios
     static bool initialized = false;
@@ -26,7 +41,7 @@ int randomNum(int nr_min, int nr_max)
     return rand() % nr_max + nr_min;
 }
 
-void reset(int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
     int cor;
 
@@ -39,49 +54,60 @@ void reset(int ladox, int ladoy, vector<vector<cell>> &pontos)
             pontos[i][j].exposto = false;
             pontos[i][j].flag = false;
             numflags = 0;
-            cor = randomNum(0, 13);
+            cor = Game::randomNum(0, 13);
             SDL_SetRenderDrawColor(renderer, cores[cor][0], cores[cor][1], cores[cor][2], 100);
             SDL_Rect rect = {i * 20, j * 20, 20, 20};
             SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+    //Gerar menu
+    for (int i = 0; i < ladox; i++)
+    {
+        for (int j = ladoy - 1 ; j < 2; j++)
+        {
+            SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+            SDL_Rect rect = {i * 20, j * 20, 20, 20};
+            SDL_RenderFillRect(renderer, &rect);
+
         }
     }
 
     SDL_RenderPresent(renderer);
 }
 
-void gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
     //Gerar Bombas
     int x, y = 0;
     for (int i = 0; i < numbombas; i++)
     {
-    start:
+        start:
         x = randomNum(0, ladox);
         y = randomNum(0, ladoy);
-        for (int i = xfixo - 1; i <= xfixo + 1; i++)
+        for (int j = xfixo - 1; j <= xfixo + 1; j++)
         {
-            for (int j = yfixo - 1; j <= yfixo + 1; j++)
+            for (int k = yfixo - 1; k <= yfixo + 1; k++)
             {
-                if (x == i && y == j)
+                if ((x == j && y == k) || pontos[x][y].bomba == true)
                 {
                     goto start;
                 }
             }
         }
+        cout << "bomba: " << numbombas << " " << i << " " << x << " " <<y<< endl;
         pontos[x][y].bomba = true;
     }
 }
 
-int criarjanela(int ladox, int ladoy)
+int Game::criarjanela(int ladox, int ladoy)
 {
-
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
         "Minesweeper",          // window title
         SDL_WINDOWPOS_CENTERED, // initial x position
         SDL_WINDOWPOS_CENTERED, // initial y position
         ladox,                  // width, in pixels
-        ladoy,                  // height, in pixels
+        ladoy + 40,                  // height, in pixels
         SDL_WINDOW_OPENGL       // flags - see below
     );
 
@@ -99,8 +125,14 @@ int criarjanela(int ladox, int ladoy)
     }
 }
 
-void drawnum(int x, int y, int num)
+void Game::drawnum(int x, int y, int num)
 {
+    //fundo
+
+    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+    SDL_Rect rect = {x * 20, y * 20, 20, 20};
+    SDL_RenderFillRect(renderer, &rect);
+
     if (num == 1)
     {
         SDL_SetRenderDrawColor(renderer, 42, 46, 128, 100);
@@ -245,7 +277,7 @@ void drawnum(int x, int y, int num)
     }
 }
 
-int getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> pontos)
+int Game::getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> pontos)
 {
     int xtemp = xfixo - 1;
     int ytemp = yfixo - 1;
@@ -267,18 +299,24 @@ int getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>
     return num;
 }
 
-int getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
+    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+    SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
+    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderPresent(renderer);
+
     int xtemp = xfixo - 1;
     int ytemp = yfixo - 1;
     int num = 0;
+
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {
             if (yfixo > 0 && xfixo > 0 && yfixo < ladoy - 1 && xfixo < ladox - 1)
             {
-                if (getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
+                if (Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
                 {
                     SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
                     SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
@@ -286,7 +324,7 @@ int getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &
 
                     SDL_RenderPresent(renderer);
 
-                    drawnum(xtemp + j, ytemp + i, getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos));
+                    Game::drawnum(xtemp + j, ytemp + i, Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos));
                     pontos[xtemp + j][ytemp + i].exposto = true;
                 }
                 if (getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) == 0 && pontos[xtemp + j][ytemp + i].exposto == false && pontos[xtemp + j][ytemp + i].flag == false)
@@ -295,17 +333,17 @@ int getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &
                     SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
                     SDL_RenderFillRect(renderer, &rect);
                     SDL_RenderPresent(renderer);
+
                     pontos[xtemp + j][ytemp + i].exposto = true;
-                    getaround(xtemp + j, ytemp + i, ladox, ladoy, pontos);
+                    Game::getaround(xtemp + j, ytemp + i, ladox, ladoy, pontos);
                 }
             }
         }
     }
 
-    return num;
 }
 
-int drawflag(int xfixo, int yfixo, vector<vector<cell>> &pontos)
+int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &pontos)
 {
     if (pontos[xfixo][yfixo].flag == false)
     {
@@ -331,7 +369,8 @@ int drawflag(int xfixo, int yfixo, vector<vector<cell>> &pontos)
         SDL_RenderPresent(renderer);
         pontos[xfixo][yfixo].flag = true;
         numflags++;
-        return 1;
+        Game::Delay(200);
+        return numflags;
     }
     else
     {
@@ -342,11 +381,12 @@ int drawflag(int xfixo, int yfixo, vector<vector<cell>> &pontos)
         SDL_RenderPresent(renderer);
         pontos[xfixo][yfixo].flag = false;
         numflags--;
-        return 1;
+        Game::Delay(200);
+        return numflags;
     }
 }
 
-bool win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos)
+bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
     int flags = 0;
     int exposed = 0;
@@ -370,7 +410,6 @@ bool win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos)
             }
         }
     }
-    cout << "flags: " << flags << "exposto: " << exposed << endl;
     if (flags == numbombas && exposed == ((ladox * ladoy) - numbombas))
     {
         SDL_Log("..............................Ganhaste");
@@ -382,7 +421,7 @@ bool win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos)
     }
 }
 
-void drawbomb(int xfixo, int yfixo)
+void Game::drawbomb(int xfixo, int yfixo)
 {
     //fundo
 
@@ -442,140 +481,4 @@ void drawbomb(int xfixo, int yfixo)
     SDL_RenderFillRect(renderer, &rect15);
 
     SDL_RenderPresent(renderer);
-}
-
-void gamefunc(int ladox, int ladoy, int numbombas, vector<vector<cell>> &pontos)
-{
-    SDL_Event event;
-    SDL_Window *window; // Declare a pointer
-    SDL_Renderer *renderer;
-    SDL_Surface *screenSurface = NULL; //The surface contained by the window
-    SDL_Surface *background = NULL;    //Fundo
-
-    bool inicial = true;
-    int quit = 0;
-
-    srand(time(NULL));
-    SDL_Init(SDL_INIT_EVERYTHING); // Initialize SDL2
-
-    criarjanela(ladox * 20, ladoy * 20);
-
-    reset(ladox, ladoy, pontos);
-
-    //Loop do programa
-    while (quit == 0)
-    {
-        //While there's an event to handle
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_QUIT)
-            {
-                //Quit the program
-                quit = 1;
-            }
-
-            int xmouse, ymouse, xmouse_cord, ymouse_cord;
-            Uint32 buttons;
-            float temp;
-
-            SDL_PumpEvents(); // make sure we have the latest mouse state.
-
-            buttons = SDL_GetMouseState(&xmouse, &ymouse);
-
-            temp = xmouse / 20;
-            xmouse_cord = (int)temp;
-            temp = ymouse / 20;
-            ymouse_cord = (int)temp;
-
-            //SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
-
-            //Botão esquerdo
-            if ((buttons & SDL_BUTTON_LMASK) != 0)
-            {
-                int xfixo = xmouse_cord;
-                int yfixo = ymouse_cord;
-
-                //SDL_Log("Mouse Button 1 (left) is pressed.");
-
-                if (inicial == true && pontos[xfixo][yfixo].flag == false)
-                {
-                    gerarbombas(numbombas, xfixo, yfixo, ladox, ladoy, pontos);
-                    inicial = false;
-                }
-
-                else if (pontos[xfixo][yfixo].bomba == true && inicial == false && pontos[xfixo][yfixo].flag == false)
-                {
-                    for (int i = 0; i < ladoy; i++)
-                    {
-                        for (int j = 0; j < ladox; j++)
-                        {
-                            if (pontos[j][i].bomba == true)
-                            {
-                                drawbomb(j, i);
-                            }
-                        }
-                    }
-                    SDL_Log("..............................Perdeste");
-                    inicial = true;
-                    Delay(2);
-                    reset(ladox, ladoy, pontos);
-                }
-                else if (pontos[xfixo][yfixo].flag == false)
-                {
-                    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
-                    SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
-                    SDL_RenderFillRect(renderer, &rect);
-
-                    SDL_RenderPresent(renderer);
-                    pontos[xfixo][yfixo].exposto = true;
-
-                    if (getnumbombas(xfixo, yfixo, ladox, ladoy, pontos) == 0)
-                    {
-                        getaround(xfixo, yfixo, ladox, ladoy, pontos);
-                    }
-                    else
-                    {
-                        drawnum(xmouse_cord, ymouse_cord, getnumbombas(xfixo, yfixo, ladox, ladoy, pontos));
-                    }
-                }
-            }
-
-            //botão direito
-            if ((buttons & SDL_BUTTON_RMASK) != 0)
-            {
-                int xfixo = xmouse_cord;
-                int yfixo = ymouse_cord;
-
-                //SDL_Log("Mouse Button 1 (right) is pressed.");
-                if (pontos[xfixo][yfixo].exposto == false)
-                {
-                    numflags = drawflag(xfixo, yfixo, pontos);
-                }
-            }
-
-            if (numflags >= numbombas)
-            {
-                if (win(numbombas, ladox, ladoy, pontos))
-                {
-                    inicial = true;
-                    Delay(2);
-                    reset(ladox, ladoy, pontos);
-                }
-            }
-        }
-    }
-
-    SDL_RenderPresent(renderer);
-
-    // Close and destroy the window
-    SDL_DestroyWindow(window);
-
-    //Limpar Superfícies
-    SDL_FreeSurface(background);
-    background = NULL;
-
-    // Clean up
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 }
