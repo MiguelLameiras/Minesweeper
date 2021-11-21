@@ -10,7 +10,8 @@ INCLUDE = #(-I "/home.../.h")
 
 mine: ${OBJS}
 	@echo compiling... $< [$@]
-	 	${CXX} ${OBJS} ${CXXFLAGS} ${INCLUDES} -o $@ 
+	 	${CXX} ${OBJS} ${CXXFLAGS} ${INCLUDES} -o $@
+	@echo done compiling!
 
 clean:
 	@echo cleaning...
