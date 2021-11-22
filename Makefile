@@ -3,7 +3,7 @@
 #### definitions
 
 CXX = g++
-CXXFLAGS = -w -lSDL2 
+CXXFLAGS = -w -lSDL2 -lSDL2_ttf
 OBJS = mine_header.cpp mine_main.cpp
 INCLUDE = #(-I "/home.../.h")
 ####

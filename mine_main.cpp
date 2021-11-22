@@ -20,8 +20,7 @@ int main(int argc, char *argv[])
   bool inicial = true;
   int quit = 0;
   int numflags = 0;
-
-  Game a(event, window, renderer, screenSurface, background);
+  clock_t time_init;
 
   while (ladox > 70 && ladox > 5)
   {
@@ -51,11 +50,17 @@ int main(int argc, char *argv[])
   vector<vector<cell>> pontos(ladox, vector<cell>(ladoy));
 
   srand(time(NULL));
+
   SDL_Init(SDL_INIT_EVERYTHING); // Initialize SDL2
+
+  Game a(event, window, renderer, screenSurface, background);
 
   a.criarjanela(ladox * 20, ladoy * 20);
 
   a.reset(numflags, ladox, ladoy, pontos);
+
+  //Set callback
+  //SDL_TimerID timerID = SDL_AddTimer(3 * 1000, a.callback, "3 seconds waited!");
 
   //Loop do programa
   while (quit == 0)
@@ -87,18 +92,21 @@ int main(int argc, char *argv[])
       //Botão esquerdo
       if ((buttons & SDL_BUTTON_LMASK) != 0)
       {
-        if (ymouse_cord < ladoy )
+        if (ymouse_cord < ladoy)
         {
           int xfixo = xmouse_cord;
           int yfixo = ymouse_cord;
 
           //SDL_Log("Mouse Button 1 (left) is pressed.");
 
+          a.draw_text(a.elapsed_time(time_init), 10, ladoy * 20, 19, 20, 19, 24, ladox, ladoy);
+
           if (inicial == true && pontos[xfixo][yfixo].flag == false)
           {
             a.gerarbombas(numbombas, xfixo, yfixo, ladox, ladoy, pontos);
             a.getaround(xfixo, yfixo, ladox, ladoy, pontos);
             inicial = false;
+            time_init = clock();
           }
 
           else if (pontos[xfixo][yfixo].bomba == true && inicial == false && pontos[xfixo][yfixo].flag == false)
@@ -118,6 +126,7 @@ int main(int argc, char *argv[])
             a.Delay(1000);
             a.reset(numflags, ladox, ladoy, pontos);
           }
+
           else if (pontos[xfixo][yfixo].flag == false)
           {
             pontos[xfixo][yfixo].exposto = true;
@@ -131,42 +140,35 @@ int main(int argc, char *argv[])
             }
           }
         }
+      }
 
-        //botão direito
-        if ((buttons & SDL_BUTTON_RMASK) != 0)
+      //botão direito
+      if ((buttons & SDL_BUTTON_RMASK) != 0)
+      {
+        int xfixo = xmouse_cord;
+        int yfixo = ymouse_cord;
+
+        SDL_Log("Mouse Button 1 (right) is pressed.");
+        if (pontos[xfixo][yfixo].exposto == false)
         {
-          int xfixo = xmouse_cord;
-          int yfixo = ymouse_cord;
-
-          //SDL_Log("Mouse Button 1 (right) is pressed.");
-          if (pontos[xfixo][yfixo].exposto == false)
-          {
-            numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
-          }
+          numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
         }
+      }
 
-        if (numflags == numbombas)
+      if (numflags == numbombas)
+      {
+        cout << "flags: " << numflags << "bombas: " << numbombas << endl;
+        if (a.win(numbombas, ladox, ladoy, pontos))
         {
-          cout << "flags: " << numflags << "bombas: " << numbombas << endl;
-          if (a.win(numbombas, ladox, ladoy, pontos))
-          {
-            inicial = true;
-            a.Delay(1000);
-            a.reset(numflags, ladox, ladoy, pontos);
-          }
+          inicial = true;
+          a.Delay(1000);
+          a.reset(numflags, ladox, ladoy, pontos);
         }
       }
     }
   }
-
-  SDL_RenderPresent(renderer);
-
-  // Close and destroy the window
-  SDL_DestroyWindow(window);
-
   //Limpar Superfícies
   SDL_FreeSurface(background);
-
   // Clean up
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

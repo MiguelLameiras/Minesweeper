@@ -1,7 +1,11 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
 #include <time.h>
 #include <iostream>
+#include <string>
 #include <vector>
+
 #include "mine_header.h"
 
 using namespace std;
@@ -15,16 +19,29 @@ Game::Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_S
     renderer = renderer_;
     screenSurface = screenSurface_;
     background = background_;
+    TTF_Init();
+}
+
+Game::~Game()
+{
+    TTF_Quit();
+    //Limpar Superfícies
+    SDL_FreeSurface(background);
+    SDL_FreeSurface(screenSurface);
+    // Clean up
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 void Game::Delay(int milliseconds)
 {
     long pause;
-    clock_t now,then;
+    clock_t now, then;
 
-    pause = milliseconds*(CLOCKS_PER_SEC/1000);
+    pause = milliseconds * (CLOCKS_PER_SEC / 1000);
     now = then = clock();
-    while( (now-then) < pause )
+    while ((now - then) < pause)
         now = clock();
 }
 
@@ -60,18 +77,20 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
             SDL_RenderFillRect(renderer, &rect);
         }
     }
+
     //Gerar menu
     for (int i = 0; i < ladox; i++)
     {
-        for (int j = ladoy - 1 ; j < 2; j++)
+        for (int j = ladoy; j < ladoy + 2; j++)
         {
-            SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+            //cout << "criando..." << endl;
+            SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
             SDL_Rect rect = {i * 20, j * 20, 20, 20};
             SDL_RenderFillRect(renderer, &rect);
-
         }
     }
 
+    SDL_RenderPresent(renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -81,7 +100,7 @@ void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy
     int x, y = 0;
     for (int i = 0; i < numbombas; i++)
     {
-        start:
+    start:
         x = randomNum(0, ladox);
         y = randomNum(0, ladoy);
         for (int j = xfixo - 1; j <= xfixo + 1; j++)
@@ -94,7 +113,7 @@ void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy
                 }
             }
         }
-        cout << "bomba: " << numbombas << " " << i << " " << x << " " <<y<< endl;
+        cout << "bomba: " << numbombas << " " << i << " " << x << " " << y << endl;
         pontos[x][y].bomba = true;
     }
 }
@@ -107,7 +126,7 @@ int Game::criarjanela(int ladox, int ladoy)
         SDL_WINDOWPOS_CENTERED, // initial x position
         SDL_WINDOWPOS_CENTERED, // initial y position
         ladox,                  // width, in pixels
-        ladoy + 40,                  // height, in pixels
+        ladoy + 40,             // height, in pixels
         SDL_WINDOW_OPENGL       // flags - see below
     );
 
@@ -128,7 +147,6 @@ int Game::criarjanela(int ladox, int ladoy)
 void Game::drawnum(int x, int y, int num)
 {
     //fundo
-
     SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
     SDL_Rect rect = {x * 20, y * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
@@ -340,7 +358,6 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
             }
         }
     }
-
 }
 
 int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &pontos)
@@ -422,6 +439,7 @@ bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos
 }
 
 void Game::drawbomb(int xfixo, int yfixo)
+
 {
     //fundo
 
@@ -481,4 +499,55 @@ void Game::drawbomb(int xfixo, int yfixo)
     SDL_RenderFillRect(renderer, &rect15);
 
     SDL_RenderPresent(renderer);
+}
+
+void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size,int ladox,int ladoy)
+{
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+
+    SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
+    SDL_Rect bg = {0,ladoy*20 , ladox*20, 40};
+    SDL_RenderFillRect(renderer, &bg);
+    SDL_RenderPresent(renderer);
+
+    TTF_Font *font = TTF_OpenFont("Font.ttf", size);
+    if (!font)
+    {
+        printf("TTF_OpenFont: %s\n", TTF_GetError());
+    }
+    cout << msg.c_str() << endl;
+    surface = TTF_RenderText_Blended(font, msg.c_str(), {r, g, b});
+    if (surface == NULL)
+    {
+        cout << "Could not render surface" << endl;
+    }
+    SDL_Rect rect;
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    rect.x = x;
+    rect.y = y;
+    rect.w = surface->w;
+    rect.h = surface->h;
+
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+    TTF_CloseFont(font);
+
+}
+
+string Game::elapsed_time(clock_t time_init)
+{
+      time_init = clock() - time_init;
+      int time_taken = (int)((double)time_init)/CLOCKS_PER_SEC;
+      string s = to_string(time_taken);
+      return s;
+}
+
+Uint32 Game::callback(Uint32 interval, void* param)
+{
+    //Print callback message
+    printf( "Callback called back with message: %s\n", (char*)param );
+
+    return 0;
 }
