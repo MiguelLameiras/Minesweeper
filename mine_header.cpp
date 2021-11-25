@@ -79,18 +79,12 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
     }
 
     //Gerar menu
-    for (int i = 0; i < ladox; i++)
-    {
-        for (int j = ladoy; j < ladoy + 2; j++)
-        {
-            //cout << "criando..." << endl;
-            SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
-            SDL_Rect rect = {i * 20, j * 20, 20, 20};
-            SDL_RenderFillRect(renderer, &rect);
-        }
-    }
+    SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
+    SDL_Rect rect = {0, ladoy * 20, ladox*20, 40};
+    SDL_RenderFillRect(renderer, &rect);
 
-    SDL_RenderPresent(renderer);
+    draw_text("RESET", 60, (ladoy * 20) + 10, 19, 20, 19, 18,60,ladoy,232, 228, 227,60,40);
+
     SDL_RenderPresent(renderer);
 }
 
@@ -113,7 +107,7 @@ void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy
                 }
             }
         }
-        cout << "bomba: " << numbombas << " " << i << " " << x << " " << y << endl;
+        //cout << "bomba: " << numbombas << " " << i << " " << x << " " << y << endl;
         pontos[x][y].bomba = true;
     }
 }
@@ -153,6 +147,7 @@ void Game::drawnum(int x, int y, int num)
 
     if (num == 1)
     {
+
         SDL_SetRenderDrawColor(renderer, 42, 46, 128, 100);
         SDL_Rect rect1 = {x * 20 + 10, y * 20 + 3, 4, 14};
         SDL_RenderFillRect(renderer, &rect1);
@@ -161,6 +156,7 @@ void Game::drawnum(int x, int y, int num)
         SDL_RenderFillRect(renderer, &rect2);
 
         SDL_RenderPresent(renderer);
+    
     }
     else if (num == 2)
     {
@@ -501,27 +497,28 @@ void Game::drawbomb(int xfixo, int yfixo)
     SDL_RenderPresent(renderer);
 }
 
-void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size,int ladox,int ladoy)
+void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth)
 {
     SDL_Surface *surface;
     SDL_Texture *texture;
 
-    SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
-    SDL_Rect bg = {0,ladoy*20 , ladox*20, 40};
+    SDL_SetRenderDrawColor(renderer, rectr, rectg, rectb, 100);
+    SDL_Rect bg = {rectx * 20, recty * 20, rectw, recth};
     SDL_RenderFillRect(renderer, &bg);
     SDL_RenderPresent(renderer);
 
-    TTF_Font *font = TTF_OpenFont("Font.ttf", size);
+    TTF_Font *font = TTF_OpenFont("pixelmix.ttf", size);
     if (!font)
     {
         printf("TTF_OpenFont: %s\n", TTF_GetError());
     }
-    cout << msg.c_str() << endl;
+
     surface = TTF_RenderText_Blended(font, msg.c_str(), {r, g, b});
     if (surface == NULL)
     {
         cout << "Could not render surface" << endl;
     }
+
     SDL_Rect rect;
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     rect.x = x;
@@ -530,24 +527,16 @@ void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size,int
     rect.h = surface->h;
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_RenderPresent(renderer);
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
     TTF_CloseFont(font);
-
 }
 
 string Game::elapsed_time(clock_t time_init)
 {
-      time_init = clock() - time_init;
-      int time_taken = (int)((double)time_init)/CLOCKS_PER_SEC;
-      string s = to_string(time_taken);
-      return s;
-}
-
-Uint32 Game::callback(Uint32 interval, void* param)
-{
-    //Print callback message
-    printf( "Callback called back with message: %s\n", (char*)param );
-
-    return 0;
+    time_init = clock() - time_init;
+    int time_taken = (int)((double)time_init) / CLOCKS_PER_SEC;
+    string s = to_string(time_taken);
+    return s;
 }

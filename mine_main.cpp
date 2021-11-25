@@ -21,13 +21,14 @@ int main(int argc, char *argv[])
   int quit = 0;
   int numflags = 0;
   clock_t time_init;
+  int tempstring = 0;
 
-  while (ladox > 70 && ladox > 5)
+  while (ladox > 70 || ladox < 10)
   {
     cout << "Largura:";
     cin >> ladox;
   }
-  while (ladoy > 40 && ladoy > 5)
+  while (ladoy > 30 || ladoy < 10)
   {
     cout << "\nAltura:";
     cin >> ladoy;
@@ -59,9 +60,6 @@ int main(int argc, char *argv[])
 
   a.reset(numflags, ladox, ladoy, pontos);
 
-  //Set callback
-  //SDL_TimerID timerID = SDL_AddTimer(3 * 1000, a.callback, "3 seconds waited!");
-
   //Loop do programa
   while (quit == 0)
   {
@@ -82,14 +80,14 @@ int main(int argc, char *argv[])
 
       buttons = SDL_GetMouseState(&xmouse, &ymouse);
 
-      SDL_Log("Mouse cursor is at %d, %d", xmouse, ymouse);
-
       temp = xmouse / 20;
       xmouse_cord = (int)temp;
       temp = ymouse / 20;
       ymouse_cord = (int)temp;
 
-      //Botão esquerdo
+      //SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
+
+      //lEFT BUTTON CLICK
       if ((buttons & SDL_BUTTON_LMASK) != 0)
       {
         if (ymouse_cord < ladoy)
@@ -98,8 +96,6 @@ int main(int argc, char *argv[])
           int yfixo = ymouse_cord;
 
           //SDL_Log("Mouse Button 1 (left) is pressed.");
-
-          a.draw_text(a.elapsed_time(time_init), 10, ladoy * 20, 19, 20, 19, 24, ladox, ladoy);
 
           if (inicial == true && pontos[xfixo][yfixo].flag == false)
           {
@@ -123,8 +119,8 @@ int main(int argc, char *argv[])
             }
             SDL_Log("..............................Perdeste");
             inicial = true;
-            a.Delay(1000);
-            a.reset(numflags, ladox, ladoy, pontos);
+            //a.Delay(1000);
+            //a.reset(numflags, ladox, ladoy, pontos);
           }
 
           else if (pontos[xfixo][yfixo].flag == false)
@@ -140,31 +136,46 @@ int main(int argc, char *argv[])
             }
           }
         }
+        //RESET BUTTON
+        else if ((xmouse_cord < 7 && ymouse_cord < ladoy + 2 && xmouse_cord > 2 && ymouse_cord >= ladoy) && inicial == false)
+        {
+          inicial = true;
+          a.reset(numflags, ladox, ladoy, pontos);
+        }
       }
 
-      //botão direito
+      //RIGHT BUTTON CLICK
       if ((buttons & SDL_BUTTON_RMASK) != 0)
       {
-        int xfixo = xmouse_cord;
-        int yfixo = ymouse_cord;
-
-        SDL_Log("Mouse Button 1 (right) is pressed.");
-        if (pontos[xfixo][yfixo].exposto == false)
+        if (ymouse_cord < ladoy)
         {
-          numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
+          int xfixo = xmouse_cord;
+          int yfixo = ymouse_cord;
+
+          //SDL_Log("Mouse Button 1 (right) is pressed.");
+          if (pontos[xfixo][yfixo].exposto == false)
+          {
+            numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
+          }
         }
       }
 
       if (numflags == numbombas)
       {
-        cout << "flags: " << numflags << "bombas: " << numbombas << endl;
+        //cout << "flags: " << numflags << "bombas: " << numbombas << endl;
         if (a.win(numbombas, ladox, ladoy, pontos))
         {
+          SDL_Log("..............................Ganhaste");
           inicial = true;
-          a.Delay(1000);
-          a.reset(numflags, ladox, ladoy, pontos);
+          //a.Delay(1000);
+          //a.reset(numflags, ladox, ladoy, pontos);
         }
       }
+    }
+    if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false)
+    {
+      a.draw_text(a.elapsed_time(time_init), 10, (ladoy * 20) + 10, 19, 20, 19, 18, 0, ladoy, 232, 228, 227, 60, 40);
+      tempstring = stoi(a.elapsed_time(time_init));
     }
   }
   //Limpar Superfícies
