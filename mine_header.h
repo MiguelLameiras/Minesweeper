@@ -31,9 +31,8 @@ public:
   int drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &pontos);
   bool win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos);
   void drawbomb(int xfixo, int yfixo);
-  void draw_text(string msg, int x, int y, int r, int g, int b, int size,int ladox,int ladoy);
+  void draw_text(string msg, int x, int y, int r, int g, int b, int size,int rectx,int recty,int rectr,int rectg,int rectb,int rectw,int recth);
   string elapsed_time(clock_t time_init);
-  Uint32 callback(Uint32 interval, void* param);
 
 private:
   SDL_Event event;
