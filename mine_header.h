@@ -1,3 +1,12 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+
+#include <time.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #ifndef __mine_header__
 #define __mine_header__
 
@@ -17,7 +26,7 @@ class Game
 public:
   // constructors and destructor
   Game();
-  Game(SDL_Event event_,SDL_Window *window_,SDL_Renderer *renderer_,SDL_Surface *screenSurface_,SDL_Surface *background_);
+  Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_Surface *screenSurface_, SDL_Surface *background_);
   ~Game();
 
   void Delay(int milliseconds);
@@ -31,8 +40,9 @@ public:
   int drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &pontos);
   bool win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos);
   void drawbomb(int xfixo, int yfixo);
-  void draw_text(string msg, int x, int y, int r, int g, int b, int size,int rectx,int recty,int rectr,int rectg,int rectb,int rectw,int recth);
+  void draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth);
   string elapsed_time(clock_t time_init);
+  void draw_image(string file, int x, int y);
 
 private:
   SDL_Event event;
@@ -42,6 +52,5 @@ private:
   SDL_Surface *background = NULL;    //Fundo
   SDL_Surface *surface;
   SDL_Texture *texture;
-
 };
 #endif

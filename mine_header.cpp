@@ -1,11 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
-#include <time.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "mine_header.h"
 
 using namespace std;
@@ -20,11 +12,13 @@ Game::Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_S
     screenSurface = screenSurface_;
     background = background_;
     TTF_Init();
+    IMG_Init(IMG_INIT_PNG);
 }
 
 Game::~Game()
 {
     TTF_Quit();
+    IMG_Quit();
     //Limpar Superfícies
     SDL_FreeSurface(background);
     SDL_FreeSurface(screenSurface);
@@ -80,10 +74,10 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
 
     //Gerar menu
     SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
-    SDL_Rect rect = {0, ladoy * 20, ladox*20, 40};
+    SDL_Rect rect = {0, ladoy * 20, ladox * 20, 40};
     SDL_RenderFillRect(renderer, &rect);
 
-    draw_text("RESET", 60, (ladoy * 20) + 10, 19, 20, 19, 18,60,ladoy,232, 228, 227,60,40);
+    draw_text("RESET", 60, (ladoy * 20) + 10, 19, 20, 19, 18, 60, ladoy, 232, 228, 227, 60, 40);
 
     SDL_RenderPresent(renderer);
 }
@@ -156,7 +150,6 @@ void Game::drawnum(int x, int y, int num)
         SDL_RenderFillRect(renderer, &rect2);
 
         SDL_RenderPresent(renderer);
-    
     }
     else if (num == 2)
     {
@@ -539,4 +532,35 @@ string Game::elapsed_time(clock_t time_init)
     int time_taken = (int)((double)time_init) / CLOCKS_PER_SEC;
     string s = to_string(time_taken);
     return s;
+}
+
+void Game::draw_image(string file, int x, int y)
+{
+    //The final texture
+    SDL_Texture* newTexture = NULL;
+
+    //Load image at specified path
+    SDL_Surface *loadedSurface = IMG_Load(file.c_str());
+    if (loadedSurface == NULL)
+    {
+        printf("Unable to load image %s! SDL_image Error: %s\n", file.c_str(), IMG_GetError());
+    }
+    else
+    {
+        //Create texture from surface pixels
+        newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+        if (newTexture == NULL)
+        {
+            printf("Unable to create texture from %s! SDL Error: %s\n", file.c_str(), SDL_GetError());
+        }
+
+        //Get rid of old loaded surface
+        SDL_FreeSurface(loadedSurface);
+
+        //Render texture to screen
+        SDL_RenderCopy(renderer, newTexture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_DestroyTexture(newTexture);
 }
