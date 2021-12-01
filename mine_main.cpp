@@ -170,10 +170,10 @@ int main(int argc, char *argv[])
     if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false)
     {
       //Play time timer
-      a.draw_text(a.elapsed_time(time_init), 10, (ladoy * 20) + 10, 19, 20, 19, 18, 0, ladoy, 232, 228, 227, 60, 40);
+      a.draw_text(a.elapsed_time(time_init), 10, (ladoy * 20) + 10, 235, 237, 233, 18, 0, ladoy, 21,29,40, 60, 40);
       tempstring = stoi(a.elapsed_time(time_init));
     }
-    //a.draw_image("tile.png",1,1);
+    //PHJHJÃO
   }
   // Clean up
   SDL_FreeSurface(background);
