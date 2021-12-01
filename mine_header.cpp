@@ -19,7 +19,7 @@ Game::~Game()
 {
     TTF_Quit();
     IMG_Quit();
-    //Limpar Superfícies
+    // Limpar Superfícies
     SDL_FreeSurface(background);
     SDL_FreeSurface(screenSurface);
     // Clean up
@@ -41,7 +41,7 @@ void Game::Delay(int milliseconds)
 
 int Game::randomNum(int nr_min, int nr_max)
 {
-    //gerar número aleatórios
+    // gerar número aleatórios
     static bool initialized = false;
     if (!initialized)
     {
@@ -56,7 +56,7 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
 {
     int cor;
 
-    //Gerar casas
+    // Gerar casas
     for (int i = 0; i < ladox; i++)
     {
         for (int j = 0; j < ladoy; j++)
@@ -65,26 +65,28 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
             pontos[i][j].exposto = false;
             pontos[i][j].flag = false;
             numflags = 0;
-            cor = Game::randomNum(0, 13);
+
+            /*cor = Game::randomNum(0, 13);
             SDL_SetRenderDrawColor(renderer, cores[cor][0], cores[cor][1], cores[cor][2], 100);
             SDL_Rect rect = {i * 20, j * 20, 20, 20};
-            SDL_RenderFillRect(renderer, &rect);
+            SDL_RenderFillRect(renderer, &rect);*/
+            Game::draw_image("tile.png",i*20,j*20);
         }
     }
 
-    //Gerar menu
-    SDL_SetRenderDrawColor(renderer, 232, 228, 227, 100);
+    // Gerar menu
+    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_Rect rect = {0, ladoy * 20, ladox * 20, 40};
     SDL_RenderFillRect(renderer, &rect);
 
-    draw_text("RESET", 60, (ladoy * 20) + 10, 19, 20, 19, 18, 60, ladoy, 232, 228, 227, 60, 40);
+    draw_text("RESET", 60, (ladoy * 20) + 10, 235, 237, 233, 18, 60, ladoy, 232, 228, 227, 60, 40);
 
     SDL_RenderPresent(renderer);
 }
 
 void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
-    //Gerar Bombas
+    // Gerar Bombas
     int x, y = 0;
     for (int i = 0; i < numbombas; i++)
     {
@@ -101,7 +103,7 @@ void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy
                 }
             }
         }
-        //cout << "bomba: " << numbombas << " " << i << " " << x << " " << y << endl;
+        // cout << "bomba: " << numbombas << " " << i << " " << x << " " << y << endl;
         pontos[x][y].bomba = true;
     }
 }
@@ -134,7 +136,7 @@ int Game::criarjanela(int ladox, int ladoy)
 
 void Game::drawnum(int x, int y, int num)
 {
-    //fundo
+    // fundo
     SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
     SDL_Rect rect = {x * 20, y * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
@@ -380,11 +382,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
     }
     else
     {
-        int cor = randomNum(0, 13);
-        SDL_SetRenderDrawColor(renderer, cores[cor][0], cores[cor][1], cores[cor][2], 100);
-        SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
-        SDL_RenderFillRect(renderer, &rect);
-        SDL_RenderPresent(renderer);
+        Game::draw_image("tile.png",xfixo*20,yfixo*20);
         pontos[xfixo][yfixo].flag = false;
         numflags--;
         Game::Delay(200);
@@ -430,13 +428,13 @@ bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos
 void Game::drawbomb(int xfixo, int yfixo)
 
 {
-    //fundo
+    // fundo
 
     SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
     SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
 
-    //bomba
+    // bomba
     SDL_SetRenderDrawColor(renderer, 19, 20, 19, 100);
 
     SDL_Rect rect1 = {xfixo * 20 + 10, yfixo * 20 + 3, 2, 16};
@@ -475,7 +473,7 @@ void Game::drawbomb(int xfixo, int yfixo)
     SDL_Rect rect12 = {xfixo * 20 + 14, yfixo * 20 + 7, 2, 8};
     SDL_RenderFillRect(renderer, &rect12);
 
-    //reflexo
+    // reflexo
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 100);
 
     SDL_Rect rect13 = {xfixo * 20 + 8, yfixo * 20 + 7, 2, 1};
@@ -536,10 +534,10 @@ string Game::elapsed_time(clock_t time_init)
 
 void Game::draw_image(string file, int x, int y)
 {
-    //The final texture
-    SDL_Texture* newTexture = NULL;
+    // The final texture
+    SDL_Texture *newTexture = NULL;
 
-    //Load image at specified path
+    // Load image at specified path
     SDL_Surface *loadedSurface = IMG_Load(file.c_str());
     if (loadedSurface == NULL)
     {
@@ -547,20 +545,30 @@ void Game::draw_image(string file, int x, int y)
     }
     else
     {
-        //Create texture from surface pixels
+        // Create texture from surface pixels
         newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
         if (newTexture == NULL)
         {
             printf("Unable to create texture from %s! SDL Error: %s\n", file.c_str(), SDL_GetError());
         }
 
-        //Get rid of old loaded surface
+        // Get rid of old loaded surface
         SDL_FreeSurface(loadedSurface);
 
-        //Render texture to screen
+        // Setviewport
+        SDL_Rect Viewport;
+        Viewport.x = x;
+        Viewport.y = y;
+        Viewport.w = 20;
+        Viewport.h = 20;
+        SDL_RenderSetViewport(renderer, &Viewport);
+
+        // Render texture to screen
         SDL_RenderCopy(renderer, newTexture, NULL, NULL);
         SDL_RenderPresent(renderer);
+
+        SDL_RenderSetViewport(renderer, NULL);
     }
 
     SDL_DestroyTexture(newTexture);
-}
+};
