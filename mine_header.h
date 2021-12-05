@@ -23,10 +23,9 @@ struct cell
 
 class Game
 {
-public:
+public: 
   // constructors and destructor
   Game();
-  Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_Surface *screenSurface_, SDL_Surface *background_);
   ~Game();
 
   void Delay(int milliseconds);
@@ -42,7 +41,8 @@ public:
   void drawbomb(int xfixo, int yfixo);
   void draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth);
   string elapsed_time(clock_t time_init);
-  void draw_image(string file, int x, int y);
+  void draw_image(int x, int y,int tile_num);
+  void GetTileMap(string file);
 
 private:
   SDL_Event event;
@@ -52,5 +52,11 @@ private:
   SDL_Surface *background = NULL;    //Fundo
   SDL_Surface *surface;
   SDL_Texture *texture;
+  //Load images from one big tileset 
+  int width = 20; //tile size in pixels
+  int height = 20;
+  int num_tiles = 10;
+  SDL_Texture *TileMap = NULL;
+  SDL_Rect SpriteClips[10];
 };
 #endif

@@ -4,13 +4,9 @@ using namespace std;
 
 int cores[14][3] = {{11, 120, 79}, {10, 106, 70}, {8, 93, 62}, {7, 80, 53}, {6, 67, 44}, {5, 53, 35}, {4, 40, 26}, {15, 166, 110}, {49, 109, 14}, {29, 64, 8}, {26, 57, 7}, {22, 50, 6}, {19, 43, 5}, {16, 36, 4}};
 
-Game::Game(SDL_Event event_, SDL_Window *window_, SDL_Renderer *renderer_, SDL_Surface *screenSurface_, SDL_Surface *background_)
+Game::Game()
 {
-    event = event_;
-    window = window_;
-    renderer = renderer_;
-    screenSurface = screenSurface_;
-    background = background_;
+    SDL_Init(SDL_INIT_EVERYTHING); // Initialize SDL2
     TTF_Init();
     IMG_Init(IMG_INIT_PNG);
 }
@@ -54,9 +50,11 @@ int Game::randomNum(int nr_min, int nr_max)
 
 void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
-    int cor;
-
+    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
+    SDL_RenderClear(renderer);
+    
     // Gerar casas
+    numflags = 0;
     for (int i = 0; i < ladox; i++)
     {
         for (int j = 0; j < ladoy; j++)
@@ -64,13 +62,8 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
             pontos[i][j].bomba = false;
             pontos[i][j].exposto = false;
             pontos[i][j].flag = false;
-            numflags = 0;
 
-            /*cor = Game::randomNum(0, 13);
-            SDL_SetRenderDrawColor(renderer, cores[cor][0], cores[cor][1], cores[cor][2], 100);
-            SDL_Rect rect = {i * 20, j * 20, 20, 20};
-            SDL_RenderFillRect(renderer, &rect);*/
-            Game::draw_image("tile.png",i*20,j*20);
+            draw_image(i * 20, j * 20,0);
         }
     }
 
@@ -137,72 +130,25 @@ int Game::criarjanela(int ladox, int ladoy)
 void Game::drawnum(int x, int y, int num)
 {
     // fundo
-    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_Rect rect = {x * 20, y * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
 
     if (num == 1)
     {
-
-        SDL_SetRenderDrawColor(renderer, 42, 46, 128, 100);
-        SDL_Rect rect1 = {x * 20 + 10, y * 20 + 3, 4, 14};
-        SDL_RenderFillRect(renderer, &rect1);
-
-        SDL_Rect rect2 = {x * 20 + 7, y * 20 + 6, 3, 4};
-        SDL_RenderFillRect(renderer, &rect2);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,2);
     }
     else if (num == 2)
     {
-        SDL_SetRenderDrawColor(renderer, 9, 87, 29, 100);
-        SDL_Rect rect3 = {x * 20 + 5, y * 20 + 3, 7, 3};
-        SDL_RenderFillRect(renderer, &rect3);
-
-        SDL_Rect rect4 = {x * 20 + 5, y * 20 + 14, 10, 3};
-        SDL_RenderFillRect(renderer, &rect4);
-
-        SDL_Rect rect5 = {x * 20 + 8, y * 20 + 8, 4, 3};
-        SDL_RenderFillRect(renderer, &rect5);
-
-        SDL_Rect rect6 = {x * 20 + 12, y * 20 + 5, 3, 4};
-        SDL_RenderFillRect(renderer, &rect6);
-
-        SDL_Rect rect7 = {x * 20 + 5, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect7);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,3);
     }
     else if (num == 3)
     {
-        SDL_SetRenderDrawColor(renderer, 128, 42, 42, 100);
-        SDL_Rect rect8 = {x * 20 + 5, y * 20 + 3, 7, 3};
-        SDL_RenderFillRect(renderer, &rect8);
-
-        SDL_Rect rect9 = {x * 20 + 5, y * 20 + 14, 7, 3};
-        SDL_RenderFillRect(renderer, &rect9);
-
-        SDL_Rect rect10 = {x * 20 + 8, y * 20 + 8, 4, 3};
-        SDL_RenderFillRect(renderer, &rect10);
-
-        SDL_Rect rect11 = {x * 20 + 12, y * 20 + 5, 3, 10};
-        SDL_RenderFillRect(renderer, &rect11);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,4);
     }
     else if (num == 4)
     {
-        SDL_SetRenderDrawColor(renderer, 89, 42, 128, 100);
-        SDL_Rect rect12 = {x * 20 + 5, y * 20 + 3, 3, 7};
-        SDL_RenderFillRect(renderer, &rect12);
-
-        SDL_Rect rect13 = {x * 20 + 5, y * 20 + 9, 7, 3};
-        SDL_RenderFillRect(renderer, &rect13);
-
-        SDL_Rect rect14 = {x * 20 + 12, y * 20 + 3, 3, 14};
-        SDL_RenderFillRect(renderer, &rect14);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,5);
     }
     else if (num == 5)
     {
@@ -310,7 +256,7 @@ int Game::getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector
 
 void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
-    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
@@ -327,7 +273,7 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
             {
                 if (Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
                 {
-                    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+                    SDL_SetRenderDrawColor(renderer,21, 29, 40, 100);
                     SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
                     SDL_RenderFillRect(renderer, &rect);
 
@@ -338,7 +284,7 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
                 }
                 if (getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) == 0 && pontos[xtemp + j][ytemp + i].exposto == false && pontos[xtemp + j][ytemp + i].flag == false)
                 {
-                    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
+                    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
                     SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
                     SDL_RenderFillRect(renderer, &rect);
                     SDL_RenderPresent(renderer);
@@ -382,7 +328,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
     }
     else
     {
-        Game::draw_image("tile.png",xfixo*20,yfixo*20);
+        Game::draw_image(xfixo * 20, yfixo * 20,0);
         pontos[xfixo][yfixo].flag = false;
         numflags--;
         Game::Delay(200);
@@ -490,8 +436,8 @@ void Game::drawbomb(int xfixo, int yfixo)
 
 void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth)
 {
-    SDL_Surface *surface;
-    SDL_Texture *texture;
+    // SDL_Surface *surface;
+    // SDL_Texture *texture;
 
     SDL_SetRenderDrawColor(renderer, rectr, rectg, rectb, 100);
     SDL_Rect bg = {rectx * 20, recty * 20, rectw, recth};
@@ -532,43 +478,29 @@ string Game::elapsed_time(clock_t time_init)
     return s;
 }
 
-void Game::draw_image(string file, int x, int y)
+void Game::draw_image(int x, int y,int tile_num)
 {
-    // The final texture
-    SDL_Texture *newTexture = NULL;
+    //Set rendering space and render to screen
+    SDL_Rect renderQuad = {x, y, width, height};
+    //Render to screen
+    SDL_RenderCopy(renderer, TileMap, &SpriteClips[tile_num] , &renderQuad );
+    SDL_RenderPresent(renderer);
 
-    // Load image at specified path
-    SDL_Surface *loadedSurface = IMG_Load(file.c_str());
-    if (loadedSurface == NULL)
+};
+
+void Game::GetTileMap(string file)
+{
+    TileMap = IMG_LoadTexture(renderer, file.c_str());
+    if (TileMap == NULL)
     {
         printf("Unable to load image %s! SDL_image Error: %s\n", file.c_str(), IMG_GetError());
     }
     else
     {
-        // Create texture from surface pixels
-        newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-        if (newTexture == NULL)
+        for(int i = 0; i < num_tiles;i++)
         {
-            printf("Unable to create texture from %s! SDL Error: %s\n", file.c_str(), SDL_GetError());
+            SpriteClips[i] = {i*20,0,width,height};
         }
-
-        // Get rid of old loaded surface
-        SDL_FreeSurface(loadedSurface);
-
-        // Setviewport
-        SDL_Rect Viewport;
-        Viewport.x = x;
-        Viewport.y = y;
-        Viewport.w = 20;
-        Viewport.h = 20;
-        SDL_RenderSetViewport(renderer, &Viewport);
-
-        // Render texture to screen
-        SDL_RenderCopy(renderer, newTexture, NULL, NULL);
-        SDL_RenderPresent(renderer);
-
-        SDL_RenderSetViewport(renderer, NULL);
     }
 
-    SDL_DestroyTexture(newTexture);
 };
