@@ -5,10 +5,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   SDL_Event event;
-  SDL_Window *window; // Declare a pointer
-  SDL_Renderer *renderer;
-  SDL_Surface *screenSurface = NULL; //The surface contained by the window
-  SDL_Surface *background = NULL;    //Fundo
 
   int ladox = 100;
   int ladoy = 100;
@@ -49,12 +45,10 @@ int main(int argc, char *argv[])
 
   srand(time(NULL));
 
-  SDL_Init(SDL_INIT_EVERYTHING); // Initialize SDL2
-
-  Game a(event, window, renderer, screenSurface, background);
+  Game a;
 
   a.criarjanela(ladox * 20, ladoy * 20);
-
+  a.GetTileMap("tile.png");
   a.reset(numflags, ladox, ladoy, pontos);
 
   //Loop do programa
@@ -173,13 +167,6 @@ int main(int argc, char *argv[])
       a.draw_text(a.elapsed_time(time_init), 10, (ladoy * 20) + 10, 235, 237, 233, 18, 0, ladoy, 21,29,40, 60, 40);
       tempstring = stoi(a.elapsed_time(time_init));
     }
-    //PHJHJÃO
   }
-  // Clean up
-  SDL_FreeSurface(background);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-
   return 0;
 }
