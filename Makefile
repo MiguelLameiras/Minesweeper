@@ -8,7 +8,7 @@ OBJS = mine_header.cpp mine_main.cpp
 INCLUDE = #(-I "/home.../.h")
 ####
 
-mine: ${OBJS}
+mine.exe: ${OBJS}
 	@echo compiling... $< [$@]
 	 	${CXX} ${OBJS} ${CXXFLAGS} ${INCLUDES} -o $@
 	@echo done compiling!

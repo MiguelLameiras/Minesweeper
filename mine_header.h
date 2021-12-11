@@ -55,7 +55,7 @@ private:
   //Load images from one big tileset 
   int width = 20; //tile size in pixels
   int height = 20;
-  int num_tiles = 10;
+  int num_tiles = 11;
   SDL_Texture *TileMap = NULL;
   SDL_Rect SpriteClips[10];
 };

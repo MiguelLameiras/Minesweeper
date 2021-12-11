@@ -72,7 +72,7 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
     SDL_Rect rect = {0, ladoy * 20, ladox * 20, 40};
     SDL_RenderFillRect(renderer, &rect);
 
-    draw_text("RESET", 60, (ladoy * 20) + 10, 235, 237, 233, 18, 60, ladoy, 232, 228, 227, 60, 40);
+    draw_text("RESET", 60, (ladoy * 20) + 10, 199, 207, 204, 18, 60, ladoy, 232, 228, 227, 60, 40);
 
     SDL_RenderPresent(renderer);
 }
@@ -152,83 +152,19 @@ void Game::drawnum(int x, int y, int num)
     }
     else if (num == 5)
     {
-        SDL_SetRenderDrawColor(renderer, 128, 82, 42, 100);
-        SDL_Rect rect15 = {x * 20 + 5, y * 20 + 3, 10, 3};
-        SDL_RenderFillRect(renderer, &rect15);
-
-        SDL_Rect rect16 = {x * 20 + 5, y * 20 + 14, 10, 3};
-        SDL_RenderFillRect(renderer, &rect16);
-
-        SDL_Rect rect17 = {x * 20 + 5, y * 20 + 8, 10, 3};
-        SDL_RenderFillRect(renderer, &rect17);
-
-        SDL_Rect rect18 = {x * 20 + 5, y * 20 + 5, 3, 4};
-        SDL_RenderFillRect(renderer, &rect18);
-
-        SDL_Rect rect19 = {x * 20 + 12, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect19);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,6);;
     }
     else if (num == 6)
     {
-        SDL_SetRenderDrawColor(renderer, 189, 87, 157, 100);
-        SDL_Rect rect20 = {x * 20 + 5, y * 20 + 3, 10, 3};
-        SDL_RenderFillRect(renderer, &rect20);
-
-        SDL_Rect rect21 = {x * 20 + 5, y * 20 + 14, 10, 3};
-        SDL_RenderFillRect(renderer, &rect21);
-
-        SDL_Rect rect22 = {x * 20 + 5, y * 20 + 8, 10, 3};
-        SDL_RenderFillRect(renderer, &rect22);
-
-        SDL_Rect rect23 = {x * 20 + 5, y * 20 + 5, 3, 4};
-        SDL_RenderFillRect(renderer, &rect23);
-
-        SDL_Rect rect24 = {x * 20 + 12, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect24);
-
-        SDL_Rect rect25 = {x * 20 + 5, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect25);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,7);
     }
     else if (num == 7)
     {
-        SDL_SetRenderDrawColor(renderer, 19, 64, 15, 100);
-        SDL_Rect rect33 = {x * 20 + 6, y * 20 + 3, 8, 3};
-        SDL_RenderFillRect(renderer, &rect33);
-
-        SDL_Rect rect34 = {x * 20 + 10, y * 20 + 3, 4, 14};
-        SDL_RenderFillRect(renderer, &rect34);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,8);
     }
     else if (num == 8)
     {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
-        SDL_Rect rect26 = {x * 20 + 6, y * 20 + 3, 8, 3};
-        SDL_RenderFillRect(renderer, &rect26);
-
-        SDL_Rect rect27 = {x * 20 + 6, y * 20 + 14, 8, 3};
-        SDL_RenderFillRect(renderer, &rect27);
-
-        SDL_Rect rect28 = {x * 20 + 6, y * 20 + 9, 8, 2};
-        SDL_RenderFillRect(renderer, &rect28);
-
-        SDL_Rect rect29 = {x * 20 + 5, y * 20 + 5, 3, 4};
-        SDL_RenderFillRect(renderer, &rect29);
-
-        SDL_Rect rect30 = {x * 20 + 12, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect30);
-
-        SDL_Rect rect31 = {x * 20 + 5, y * 20 + 11, 3, 4};
-        SDL_RenderFillRect(renderer, &rect31);
-
-        SDL_Rect rect32 = {x * 20 + 12, y * 20 + 5, 3, 4};
-        SDL_RenderFillRect(renderer, &rect32);
-
-        SDL_RenderPresent(renderer);
+        draw_image(x * 20, y * 20,9);
     }
 }
 
@@ -301,26 +237,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
 {
     if (pontos[xfixo][yfixo].flag == false)
     {
-        SDL_SetRenderDrawColor(renderer, 108, 81, 0, 100);
-        SDL_Rect rect = {xfixo * 20 + 5, yfixo * 20 + 2, 1, 16};
-        SDL_RenderFillRect(renderer, &rect);
-        SDL_SetRenderDrawColor(renderer, 19, 20, 19, 100);
-        SDL_Rect rect1 = {xfixo * 20 + 6, yfixo * 20 + 2, 1, 16};
-        SDL_RenderFillRect(renderer, &rect1);
-        SDL_Rect rect6 = {xfixo * 20 + 4, yfixo * 20 + 17, 4, 1};
-        SDL_RenderFillRect(renderer, &rect6);
-        SDL_Rect rect7 = {xfixo * 20 + 3, yfixo * 20 + 18, 6, 2};
-        SDL_RenderFillRect(renderer, &rect7);
-        SDL_SetRenderDrawColor(renderer, 255, 69, 51, 100);
-        SDL_Rect rect2 = {xfixo * 20 + 7, yfixo * 20 + 2, 2, 9};
-        SDL_RenderFillRect(renderer, &rect2);
-        SDL_Rect rect3 = {xfixo * 20 + 9, yfixo * 20 + 3, 2, 7};
-        SDL_RenderFillRect(renderer, &rect3);
-        SDL_Rect rect4 = {xfixo * 20 + 11, yfixo * 20 + 4, 2, 5};
-        SDL_RenderFillRect(renderer, &rect4);
-        SDL_Rect rect5 = {xfixo * 20 + 13, yfixo * 20 + 5, 2, 3};
-        SDL_RenderFillRect(renderer, &rect5);
-        SDL_RenderPresent(renderer);
+        draw_image(xfixo * 20, yfixo * 20,1);
         pontos[xfixo][yfixo].flag = true;
         numflags++;
         Game::Delay(200);
@@ -374,64 +291,7 @@ bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos
 void Game::drawbomb(int xfixo, int yfixo)
 
 {
-    // fundo
-
-    SDL_SetRenderDrawColor(renderer, 255, 236, 181, 100);
-    SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
-    SDL_RenderFillRect(renderer, &rect);
-
-    // bomba
-    SDL_SetRenderDrawColor(renderer, 19, 20, 19, 100);
-
-    SDL_Rect rect1 = {xfixo * 20 + 10, yfixo * 20 + 3, 2, 16};
-    SDL_RenderFillRect(renderer, &rect1);
-
-    SDL_Rect rect2 = {xfixo * 20 + 3, yfixo * 20 + 10, 16, 2};
-    SDL_RenderFillRect(renderer, &rect2);
-
-    SDL_Rect rect3 = {xfixo * 20 + 5, yfixo * 20 + 8, 12, 6};
-    SDL_RenderFillRect(renderer, &rect3);
-
-    SDL_Rect rect4 = {xfixo * 20 + 8, yfixo * 20 + 5, 6, 12};
-    SDL_RenderFillRect(renderer, &rect4);
-
-    SDL_Rect rect5 = {xfixo * 20 + 4, yfixo * 20 + 4, 2, 2};
-    SDL_RenderFillRect(renderer, &rect5);
-
-    SDL_Rect rect6 = {xfixo * 20 + 4, yfixo * 20 + 16, 2, 2};
-    SDL_RenderFillRect(renderer, &rect6);
-
-    SDL_Rect rect7 = {xfixo * 20 + 16, yfixo * 20 + 4, 2, 2};
-    SDL_RenderFillRect(renderer, &rect7);
-
-    SDL_Rect rect8 = {xfixo * 20 + 16, yfixo * 20 + 16, 2, 2};
-    SDL_RenderFillRect(renderer, &rect8);
-
-    SDL_Rect rect9 = {xfixo * 20 + 7, yfixo * 20 + 6, 8, 1};
-    SDL_RenderFillRect(renderer, &rect9);
-
-    SDL_Rect rect10 = {xfixo * 20 + 7, yfixo * 20 + 15, 8, 1};
-    SDL_RenderFillRect(renderer, &rect10);
-
-    SDL_Rect rect11 = {xfixo * 20 + 6, yfixo * 20 + 7, 2, 8};
-    SDL_RenderFillRect(renderer, &rect11);
-
-    SDL_Rect rect12 = {xfixo * 20 + 14, yfixo * 20 + 7, 2, 8};
-    SDL_RenderFillRect(renderer, &rect12);
-
-    // reflexo
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 100);
-
-    SDL_Rect rect13 = {xfixo * 20 + 8, yfixo * 20 + 7, 2, 1};
-    SDL_RenderFillRect(renderer, &rect13);
-
-    SDL_Rect rect14 = {xfixo * 20 + 7, yfixo * 20 + 8, 2, 1};
-    SDL_RenderFillRect(renderer, &rect14);
-
-    SDL_Rect rect15 = {xfixo * 20 + 6, yfixo * 20 + 9, 2, 1};
-    SDL_RenderFillRect(renderer, &rect15);
-
-    SDL_RenderPresent(renderer);
+    draw_image(xfixo * 20, yfixo * 20,10);
 }
 
 void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth)
