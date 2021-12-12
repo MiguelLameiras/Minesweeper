@@ -52,7 +52,7 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
 {
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_RenderClear(renderer);
-    
+
     // Gerar casas
     numflags = 0;
     for (int i = 0; i < ladox; i++)
@@ -63,16 +63,16 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
             pontos[i][j].exposto = false;
             pontos[i][j].flag = false;
 
-            draw_image(i * 20, j * 20,0);
+            draw_image((i + 1) * 20, (j + 1) * 20, 0);
         }
     }
 
     // Gerar menu
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
-    SDL_Rect rect = {0, ladoy * 20, ladox * 20, 40};
+    SDL_Rect rect = {0, (ladoy + 2) * 20, (ladox + 1) * 20, 40};
     SDL_RenderFillRect(renderer, &rect);
 
-    draw_text("RESET", 60, (ladoy * 20) + 10, 199, 207, 204, 18, 60, ladoy, 232, 228, 227, 60, 40);
+    draw_text("RESET", 80, (ladoy + 2) * 20 + 10, 199, 207, 204, 18, 60, ladoy + 1, 232, 228, 227, 60, 40);
 
     SDL_RenderPresent(renderer);
 }
@@ -101,17 +101,19 @@ void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy
     }
 }
 
-int Game::criarjanela(int ladox, int ladoy)
+int Game::criarjanela()
 {
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
-        "Minesweeper",          // window title
-        SDL_WINDOWPOS_CENTERED, // initial x position
-        SDL_WINDOWPOS_CENTERED, // initial y position
-        ladox,                  // width, in pixels
-        ladoy + 40,             // height, in pixels
-        SDL_WINDOW_OPENGL       // flags - see below
+        "Minesweeper",                                              // window title
+        SDL_WINDOWPOS_CENTERED,                                     // initial x position
+        SDL_WINDOWPOS_CENTERED,                                     // initial y position
+        240,                                                        // width, in pixels
+        280,                                                        // height, in pixels
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN // flags - see below
     );
+
+    // SDL_SetWindowSize(window,10,10);
 
     // Check that the window was successfully created
     if (window == NULL)
@@ -124,11 +126,14 @@ int Game::criarjanela(int ladox, int ladoy)
     else
     {
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        shadow = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     }
 }
 
 void Game::drawnum(int x, int y, int num)
 {
+    x++;
+    y++;
     // fundo
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_Rect rect = {x * 20, y * 20, 20, 20};
@@ -136,35 +141,36 @@ void Game::drawnum(int x, int y, int num)
 
     if (num == 1)
     {
-        draw_image(x * 20, y * 20,2);
+        draw_image(x * 20, y * 20, 2);
     }
     else if (num == 2)
     {
-        draw_image(x * 20, y * 20,3);
+        draw_image(x * 20, y * 20, 3);
     }
     else if (num == 3)
     {
-        draw_image(x * 20, y * 20,4);
+        draw_image(x * 20, y * 20, 4);
     }
     else if (num == 4)
     {
-        draw_image(x * 20, y * 20,5);
+        draw_image(x * 20, y * 20, 5);
     }
     else if (num == 5)
     {
-        draw_image(x * 20, y * 20,6);;
+        draw_image(x * 20, y * 20, 6);
+        ;
     }
     else if (num == 6)
     {
-        draw_image(x * 20, y * 20,7);
+        draw_image(x * 20, y * 20, 7);
     }
     else if (num == 7)
     {
-        draw_image(x * 20, y * 20,8);
+        draw_image(x * 20, y * 20, 8);
     }
     else if (num == 8)
     {
-        draw_image(x * 20, y * 20,9);
+        draw_image(x * 20, y * 20, 9);
     }
 }
 
@@ -193,7 +199,7 @@ int Game::getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector
 void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
 {
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
-    SDL_Rect rect = {xfixo * 20, yfixo * 20, 20, 20};
+    SDL_Rect rect = {(xfixo + 1) * 20, (yfixo + 1) * 20, 20, 20};
     SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
 
@@ -205,23 +211,17 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
     {
         for (int j = 0; j < 3; j++)
         {
-            if (yfixo > 0 && xfixo > 0 && yfixo < ladoy - 1 && xfixo < ladox - 1)
+            if (xtemp + j >= 0 && ytemp + i >= 0 && xtemp + j < ladox && ytemp + i < ladoy)
             {
                 if (Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
                 {
-                    SDL_SetRenderDrawColor(renderer,21, 29, 40, 100);
-                    SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
-                    SDL_RenderFillRect(renderer, &rect);
-
-                    SDL_RenderPresent(renderer);
-
                     Game::drawnum(xtemp + j, ytemp + i, Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos));
                     pontos[xtemp + j][ytemp + i].exposto = true;
                 }
                 if (getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) == 0 && pontos[xtemp + j][ytemp + i].exposto == false && pontos[xtemp + j][ytemp + i].flag == false)
                 {
                     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
-                    SDL_Rect rect = {(xtemp + j) * 20, (ytemp + i) * 20, 20, 20};
+                    SDL_Rect rect = {(xtemp + j + 1) * 20, (ytemp + j + 1) * 20, 20, 20};
                     SDL_RenderFillRect(renderer, &rect);
                     SDL_RenderPresent(renderer);
 
@@ -237,7 +237,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
 {
     if (pontos[xfixo][yfixo].flag == false)
     {
-        draw_image(xfixo * 20, yfixo * 20,1);
+        draw_image((xfixo + 1) * 20, (yfixo + 1) * 20, 1);
         pontos[xfixo][yfixo].flag = true;
         numflags++;
         Game::Delay(200);
@@ -245,7 +245,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
     }
     else
     {
-        Game::draw_image(xfixo * 20, yfixo * 20,0);
+        Game::draw_image((xfixo + 1) * 20, (yfixo + 1) * 20, 0);
         pontos[xfixo][yfixo].flag = false;
         numflags--;
         Game::Delay(200);
@@ -291,7 +291,7 @@ bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos
 void Game::drawbomb(int xfixo, int yfixo)
 
 {
-    draw_image(xfixo * 20, yfixo * 20,10);
+    draw_image(xfixo * 20, yfixo * 20, 10);
 }
 
 void Game::draw_text(string msg, int x, int y, int r, int g, int b, int size, int rectx, int recty, int rectr, int rectg, int rectb, int rectw, int recth)
@@ -338,14 +338,13 @@ string Game::elapsed_time(clock_t time_init)
     return s;
 }
 
-void Game::draw_image(int x, int y,int tile_num)
+void Game::draw_image(int x, int y, int tile_num)
 {
-    //Set rendering space and render to screen
+    // Set rendering space and render to screen
     SDL_Rect renderQuad = {x, y, width, height};
-    //Render to screen
-    SDL_RenderCopy(renderer, TileMap, &SpriteClips[tile_num] , &renderQuad );
+    // Render to screen
+    SDL_RenderCopy(renderer, TileMap, &SpriteClips[tile_num], &renderQuad);
     SDL_RenderPresent(renderer);
-
 };
 
 void Game::GetTileMap(string file)
@@ -357,10 +356,17 @@ void Game::GetTileMap(string file)
     }
     else
     {
-        for(int i = 0; i < num_tiles;i++)
+        for (int i = 0; i < num_tiles; i++)
         {
-            SpriteClips[i] = {i*20,0,width,height};
+            SpriteClips[i] = {i * 20, 0, width, height};
         }
     }
+};
 
+void Game::Draw_Shadow(int x, int y)
+{
+    SDL_SetRenderDrawColor(shadow, 21, 29, 40, 100);
+    SDL_Rect shadow_rect = {x, y, 20, 20};
+    SDL_RenderFillRect(shadow, &shadow_rect);
+    SDL_RenderPresent(shadow);
 };
