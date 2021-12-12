@@ -6,9 +6,9 @@ int main(int argc, char *argv[])
 {
   SDL_Event event;
 
-  int ladox = 100;
-  int ladoy = 100;
-  int numbombas = 10000;
+  int ladox = 10;
+  int ladoy = 10;
+  int numbombas = 15;
   bool inicial = true;
   bool stop = false;
   int quit = 0;
@@ -16,30 +16,11 @@ int main(int argc, char *argv[])
   clock_t time_init;
   int tempstring = 0;
 
-  while (ladox > 70 || ladox < 10)
-  {
-    cout << "Largura:";
-    cin >> ladox;
-  }
-  while (ladoy > 30 || ladoy < 10)
-  {
-    cout << "\nAltura:";
-    cin >> ladoy;
-  }
-
-  int temp;
-  temp = ladox * ladoy * 0.1;
-  cout << "\nFacil: " << temp << " Bombas";
-  temp = ladox * ladoy * 0.15;
-  cout << "\nMédio: " << temp << " Bombas";
-  temp = ladox * ladoy * 0.2;
-  cout << "\nDificil: " << temp << " Bombas" << endl;
-
-  while (numbombas >= (ladox * ladoy) - 9)
+  /*while (numbombas >= (ladox * ladoy) - 9)
   {
     cout << "\nNumero de Bombas:";
     cin >> numbombas;
-  }
+  }*/
 
   vector<vector<cell>> pontos(ladox, vector<cell>(ladoy));
 
@@ -47,19 +28,19 @@ int main(int argc, char *argv[])
 
   Game a;
 
-  a.criarjanela(ladox * 20, ladoy * 20);
+  a.criarjanela();
   a.GetTileMap("tile.png");
   a.reset(numflags, ladox, ladoy, pontos);
 
-  //Loop do programa
+  // Loop do programa
   while (quit == 0)
   {
-    //While there's an event to handle
+    // While there's an event to handle
     while (SDL_PollEvent(&event))
     {
       if (event.type == SDL_QUIT)
       {
-        //Quit the program
+        // Quit the program
         quit = 1;
       }
 
@@ -76,17 +57,17 @@ int main(int argc, char *argv[])
       temp = ymouse / 20;
       ymouse_cord = (int)temp;
 
-      //SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
+      // SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
 
-      //lEFT BUTTON CLICK
+      // LEFT BUTTON CLICK
       if ((buttons & SDL_BUTTON_LMASK) != 0)
       {
-        if (ymouse_cord < ladoy)
+        if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
         {
-          int xfixo = xmouse_cord;
-          int yfixo = ymouse_cord;
+          int xfixo = xmouse_cord - 1;
+          int yfixo = ymouse_cord - 1;
 
-          //SDL_Log("Mouse Button 1 (left) is pressed.");
+          // SDL_Log("Mouse Button 1 (left) is pressed.");
 
           if (inicial == true && pontos[xfixo][yfixo].flag == false && stop == false)
           {
@@ -104,16 +85,16 @@ int main(int argc, char *argv[])
               {
                 if (pontos[j][i].bomba == true)
                 {
-                  a.drawbomb(j, i);
+                  a.drawbomb(j + 1, i + 1);
                 }
               }
             }
-            SDL_Log("..............................Perdeste");
+            // SDL_Log("..............................Perdeste");
             inicial = true;
             stop = true;
           }
 
-          else if (pontos[xfixo][yfixo].flag == false && stop == false)
+          else if (pontos[xfixo][yfixo].flag == false && stop == false && pontos[xfixo][yfixo].exposto == false)
           {
             pontos[xfixo][yfixo].exposto = true;
             if (a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos) == 0)
@@ -122,12 +103,12 @@ int main(int argc, char *argv[])
             }
             else
             {
-              a.drawnum(xmouse_cord, ymouse_cord, a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos));
+              a.drawnum(xfixo, yfixo, a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos));
             }
           }
         }
-        //RESET BUTTON
-        else if (xmouse_cord < 7 && ymouse_cord < ladoy + 2 && xmouse_cord > 2 && ymouse_cord >= ladoy)
+        // RESET BUTTON
+        else if (xmouse_cord < 8 && ymouse_cord < ladoy + 4 && xmouse_cord > 3 && ymouse_cord >= ladoy + 2)
         {
           a.reset(numflags, ladox, ladoy, pontos);
           stop = false;
@@ -135,16 +116,17 @@ int main(int argc, char *argv[])
         }
       }
 
-      //RIGHT BUTTON CLICK
+      // RIGHT BUTTON CLICK
       if ((buttons & SDL_BUTTON_RMASK) != 0)
       {
-        if (ymouse_cord < ladoy)
+        if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
         {
-          int xfixo = xmouse_cord;
-          int yfixo = ymouse_cord;
+          int xfixo = xmouse_cord - 1;
+          int yfixo = ymouse_cord - 1;
 
-          //SDL_Log("Mouse Button 1 (right) is pressed.");
-          if (pontos[xfixo][yfixo].exposto == false && stop == false) 
+          // SDL_Log("Mouse Button 1 (right) is pressed.");
+
+          if (pontos[xfixo][yfixo].exposto == false && stop == false)
           {
             numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
           }
@@ -160,11 +142,14 @@ int main(int argc, char *argv[])
           stop = true;
         }
       }
+      // DRAW SHADOW OVER MOUSE
+    a.Draw_Shadow(xmouse,ymouse);
     }
+
     if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false)
     {
-      //Play time timer
-      a.draw_text(a.elapsed_time(time_init), 10, (ladoy * 20) + 10,199, 207, 204, 18, 0, ladoy, 21,29,40, 60, 40);
+      // Play time timer
+      a.draw_text(a.elapsed_time(time_init), 30, (ladoy + 2) * 20 + 10, 199, 207, 204, 18, 0, ladoy + 2, 21, 29, 40, 60, 40);
       tempstring = stoi(a.elapsed_time(time_init));
     }
   }

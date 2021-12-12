@@ -32,7 +32,7 @@ public:
   int randomNum(int nr_min, int nr_max);
   void reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pontos);
   void gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos);
-  int criarjanela(int ladox, int ladoy);
+  int criarjanela();
   void drawnum(int x, int y, int num);
   int getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> pontos);
   void getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos);
@@ -43,6 +43,7 @@ public:
   string elapsed_time(clock_t time_init);
   void draw_image(int x, int y,int tile_num);
   void GetTileMap(string file);
+  void Draw_Shadow(int x, int y);
 
 private:
   SDL_Event event;
@@ -52,6 +53,7 @@ private:
   SDL_Surface *background = NULL;    //Fundo
   SDL_Surface *surface;
   SDL_Texture *texture;
+  SDL_Renderer *shadow; //Shadow over Tiles
   //Load images from one big tileset 
   int width = 20; //tile size in pixels
   int height = 20;
