@@ -132,18 +132,16 @@ int main(int argc, char *argv[])
           }
         }
       }
+    }
 
-      if (numflags == numbombas)
+    if (numflags == numbombas)
+    {
+      if (a.win(numbombas, ladox, ladoy, pontos))
       {
-        if (a.win(numbombas, ladox, ladoy, pontos))
-        {
-          SDL_Log("..............................Ganhaste");
-          inicial = true;
-          stop = true;
-        }
+        SDL_Log("..............................Ganhaste");
+        inicial = true;
+        stop = true;
       }
-      // DRAW SHADOW OVER MOUSE
-    a.Draw_Shadow(xmouse,ymouse);
     }
 
     if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false)
