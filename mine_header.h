@@ -53,12 +53,11 @@ private:
   SDL_Surface *background = NULL;    //Fundo
   SDL_Surface *surface;
   SDL_Texture *texture;
-  SDL_Renderer *shadow; //Shadow over Tiles
   //Load images from one big tileset 
   int width = 20; //tile size in pixels
   int height = 20;
-  int num_tiles = 11;
+  int num_tiles = 15;
   SDL_Texture *TileMap = NULL;
-  SDL_Rect SpriteClips[10];
+  SDL_Rect SpriteClips[15];
 };
 #endif

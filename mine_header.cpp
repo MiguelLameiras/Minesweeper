@@ -74,6 +74,11 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
 
     draw_text("RESET", 80, (ladoy + 2) * 20 + 10, 199, 207, 204, 18, 60, ladoy + 1, 232, 228, 227, 60, 40);
 
+    draw_image((ladox-1)*20,(ladoy + 2) * 20, 11);
+    draw_image((ladox)*20,(ladoy + 2) * 20, 12);
+    draw_image((ladox-1)*20,(ladoy + 3) * 20, 13);
+    draw_image((ladox)*20,(ladoy + 3) * 20, 14);
+
     SDL_RenderPresent(renderer);
 }
 
@@ -126,7 +131,6 @@ int Game::criarjanela()
     else
     {
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        shadow = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     }
 }
 
@@ -361,12 +365,4 @@ void Game::GetTileMap(string file)
             SpriteClips[i] = {i * 20, 0, width, height};
         }
     }
-};
-
-void Game::Draw_Shadow(int x, int y)
-{
-    SDL_SetRenderDrawColor(shadow, 21, 29, 40, 100);
-    SDL_Rect shadow_rect = {x, y, 20, 20};
-    SDL_RenderFillRect(shadow, &shadow_rect);
-    SDL_RenderPresent(shadow);
 };
