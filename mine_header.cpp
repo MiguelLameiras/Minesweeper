@@ -366,3 +366,17 @@ void Game::GetTileMap(string file)
         }
     }
 };
+
+void Game::Settings_Menu(int ladox,int ladoy)
+{
+    SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
+    SDL_RenderClear(renderer);
+
+    draw_text("SETTINGS", 20, 20 , 199, 207, 204, 15, 20, 20, 232, 228, 227, 60, 40);
+    draw_text("X", (ladox * 20) + 10, 20 , 199, 207, 204, 15, (ladox * 20) + 10, 20, 232, 228, 227, 60, 40);
+
+    draw_text("NUMBER OF BOMBS", 20, 60 , 199, 207, 204, 15, 40, 20, 232, 228, 227, 60, 40);
+    draw_text("HEIGHT", 20, 110 , 199, 207, 204, 15, 80, 20, 232, 228, 227, 60, 40);
+    draw_text("WIDTH", 20, 160 , 199, 207, 204, 15, 120, 20, 232, 228, 227, 60, 40);
+
+};

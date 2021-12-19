@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
   int numbombas = 15;
   bool inicial = true;
   bool stop = false;
+  bool set_menu = false;
   int quit = 0;
   int numflags = 0;
   clock_t time_init;
@@ -57,78 +58,100 @@ int main(int argc, char *argv[])
       temp = ymouse / 20;
       ymouse_cord = (int)temp;
 
-      // SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
+      //SDL_Log("Mouse cursor is at %d, %d", xmouse_cord, ymouse_cord);
 
       // LEFT BUTTON CLICK
       if ((buttons & SDL_BUTTON_LMASK) != 0)
       {
-        if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
+        if (set_menu == false)
         {
-          int xfixo = xmouse_cord - 1;
-          int yfixo = ymouse_cord - 1;
-
-          // SDL_Log("Mouse Button 1 (left) is pressed.");
-
-          if (inicial == true && pontos[xfixo][yfixo].flag == false && stop == false)
+          if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
           {
-            a.gerarbombas(numbombas, xfixo, yfixo, ladox, ladoy, pontos);
-            a.getaround(xfixo, yfixo, ladox, ladoy, pontos);
-            inicial = false;
-            time_init = clock();
-          }
+            int xfixo = xmouse_cord - 1;
+            int yfixo = ymouse_cord - 1;
 
-          else if (pontos[xfixo][yfixo].bomba == true && inicial == false && pontos[xfixo][yfixo].flag == false && stop == false)
-          {
-            for (int i = 0; i < ladoy; i++)
+            // SDL_Log("Mouse Button 1 (left) is pressed.");
+
+            if (inicial == true && pontos[xfixo][yfixo].flag == false && stop == false)
             {
-              for (int j = 0; j < ladox; j++)
+              a.gerarbombas(numbombas, xfixo, yfixo, ladox, ladoy, pontos);
+              a.getaround(xfixo, yfixo, ladox, ladoy, pontos);
+              inicial = false;
+              time_init = clock();
+            }
+
+            else if (pontos[xfixo][yfixo].bomba == true && inicial == false && pontos[xfixo][yfixo].flag == false && stop == false)
+            {
+              for (int i = 0; i < ladoy; i++)
               {
-                if (pontos[j][i].bomba == true)
+                for (int j = 0; j < ladox; j++)
                 {
-                  a.drawbomb(j + 1, i + 1);
+                  if (pontos[j][i].bomba == true)
+                  {
+                    a.drawbomb(j + 1, i + 1);
+                  }
                 }
               }
+              // SDL_Log("..............................Perdeste");
+              inicial = true;
+              stop = true;
             }
-            // SDL_Log("..............................Perdeste");
-            inicial = true;
-            stop = true;
-          }
 
-          else if (pontos[xfixo][yfixo].flag == false && stop == false && pontos[xfixo][yfixo].exposto == false)
+            else if (pontos[xfixo][yfixo].flag == false && stop == false && pontos[xfixo][yfixo].exposto == false)
+            {
+              pontos[xfixo][yfixo].exposto = true;
+              if (a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos) == 0)
+              {
+                a.getaround(xfixo, yfixo, ladox, ladoy, pontos);
+              }
+              else
+              {
+                a.drawnum(xfixo, yfixo, a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos));
+              }
+            }
+          }
+          // RESET BUTTON
+          else if (xmouse_cord < 8 && ymouse_cord < ladoy + 4 && xmouse_cord > 3 && ymouse_cord >= ladoy + 2)
           {
-            pontos[xfixo][yfixo].exposto = true;
-            if (a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos) == 0)
-            {
-              a.getaround(xfixo, yfixo, ladox, ladoy, pontos);
-            }
-            else
-            {
-              a.drawnum(xfixo, yfixo, a.getnumbombas(xfixo, yfixo, ladox, ladoy, pontos));
-            }
+            a.reset(numflags, ladox, ladoy, pontos);
+            stop = false;
+            inicial = true;
+          }
+          // OPEN SETTINGS MENU
+          else if (xmouse_cord < 11 && ymouse_cord < ladoy + 4 && xmouse_cord > 8 && ymouse_cord >= ladoy + 2)
+          {
+            set_menu = true;
+            a.Settings_Menu(ladox, ladoy);
           }
         }
-        // RESET BUTTON
-        else if (xmouse_cord < 8 && ymouse_cord < ladoy + 4 && xmouse_cord > 3 && ymouse_cord >= ladoy + 2)
+        else
         {
-          a.reset(numflags, ladox, ladoy, pontos);
-          stop = false;
-          inicial = true;
+          if(xmouse_cord < 11 && ymouse_cord < 2 && xmouse_cord > 9 && ymouse_cord > 0)
+          {
+            set_menu = false;
+            a.reset(numflags, ladox, ladoy, pontos);
+            stop = false;
+            inicial = true;
+          }
         }
       }
 
       // RIGHT BUTTON CLICK
       if ((buttons & SDL_BUTTON_RMASK) != 0)
       {
-        if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
+        if (set_menu == false)
         {
-          int xfixo = xmouse_cord - 1;
-          int yfixo = ymouse_cord - 1;
-
-          // SDL_Log("Mouse Button 1 (right) is pressed.");
-
-          if (pontos[xfixo][yfixo].exposto == false && stop == false)
+          if (xmouse_cord < ladox + 1 && ymouse_cord < ladoy + 1 && xmouse_cord > 0 && ymouse_cord > 0)
           {
-            numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
+            int xfixo = xmouse_cord - 1;
+            int yfixo = ymouse_cord - 1;
+
+            // SDL_Log("Mouse Button 1 (right) is pressed.");
+
+            if (pontos[xfixo][yfixo].exposto == false && stop == false)
+            {
+              numflags = a.drawflag(numflags, xfixo, yfixo, pontos);
+            }
           }
         }
       }
@@ -144,7 +167,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false)
+    if (stoi(a.elapsed_time(time_init)) != tempstring && inicial == false && set_menu == false)
     {
       // Play time timer
       a.draw_text(a.elapsed_time(time_init), 30, (ladoy + 2) * 20 + 10, 199, 207, 204, 18, 0, ladoy + 2, 21, 29, 40, 60, 40);
