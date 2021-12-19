@@ -44,6 +44,7 @@ public:
   void draw_image(int x, int y,int tile_num);
   void GetTileMap(string file);
   void Draw_Shadow(int x, int y);
+  void Settings_Menu(int ladox,int ladoy);
 
 private:
   SDL_Event event;
