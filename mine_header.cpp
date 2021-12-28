@@ -9,6 +9,9 @@ Game::Game()
     SDL_Init(SDL_INIT_EVERYTHING); // Initialize SDL2
     TTF_Init();
     IMG_Init(IMG_INIT_PNG);
+    ladox = 10;
+    ladoy = 10;
+    numbombas = 15;
 }
 
 Game::~Game()
@@ -48,8 +51,10 @@ int Game::randomNum(int nr_min, int nr_max)
     return rand() % nr_max + nr_min;
 }
 
-void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::reset(int &numflags, vector<vector<cell>> &pontos)
 {
+    SDL_SetWindowSize(window,ladox*20 + 40,ladoy*20 + 80);
+
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_RenderClear(renderer);
 
@@ -74,15 +79,15 @@ void Game::reset(int &numflags, int ladox, int ladoy, vector<vector<cell>> &pont
 
     draw_text("RESET", 80, (ladoy + 2) * 20 + 10, 199, 207, 204, 18, 60, ladoy + 1, 232, 228, 227, 60, 40);
 
-    draw_image((ladox-1)*20,(ladoy + 2) * 20, 11);
-    draw_image((ladox)*20,(ladoy + 2) * 20, 12);
-    draw_image((ladox-1)*20,(ladoy + 3) * 20, 13);
-    draw_image((ladox)*20,(ladoy + 3) * 20, 14);
+    draw_image((ladox - 1) * 20, (ladoy + 2) * 20, 11);
+    draw_image((ladox)*20, (ladoy + 2) * 20, 12);
+    draw_image((ladox - 1) * 20, (ladoy + 3) * 20, 13);
+    draw_image((ladox)*20, (ladoy + 3) * 20, 14);
 
     SDL_RenderPresent(renderer);
 }
 
-void Game::gerarbombas(int numbombas, int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::gerarbombas(int xfixo, int yfixo, vector<vector<cell>> &pontos)
 {
     // Gerar Bombas
     int x, y = 0;
@@ -117,8 +122,6 @@ int Game::criarjanela()
         280,                                                        // height, in pixels
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN // flags - see below
     );
-
-    // SDL_SetWindowSize(window,10,10);
 
     // Check that the window was successfully created
     if (window == NULL)
@@ -178,7 +181,7 @@ void Game::drawnum(int x, int y, int num)
     }
 }
 
-int Game::getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> pontos)
+int Game::getnumbombas(int xfixo, int yfixo, vector<vector<cell>> pontos)
 {
     int xtemp = xfixo - 1;
     int ytemp = yfixo - 1;
@@ -200,7 +203,7 @@ int Game::getnumbombas(int xfixo, int yfixo, int ladox, int ladoy, vector<vector
     return num;
 }
 
-void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<cell>> &pontos)
+void Game::getaround(int xfixo, int yfixo, vector<vector<cell>> &pontos)
 {
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_Rect rect = {(xfixo + 1) * 20, (yfixo + 1) * 20, 20, 20};
@@ -217,12 +220,12 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
         {
             if (xtemp + j >= 0 && ytemp + i >= 0 && xtemp + j < ladox && ytemp + i < ladoy)
             {
-                if (Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
+                if (Game::getnumbombas(xtemp + j, ytemp + i, pontos) != 0 && pontos[xtemp + j][ytemp + i].flag == false)
                 {
-                    Game::drawnum(xtemp + j, ytemp + i, Game::getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos));
+                    Game::drawnum(xtemp + j, ytemp + i, Game::getnumbombas(xtemp + j, ytemp + i, pontos));
                     pontos[xtemp + j][ytemp + i].exposto = true;
                 }
-                if (getnumbombas(xtemp + j, ytemp + i, ladox, ladoy, pontos) == 0 && pontos[xtemp + j][ytemp + i].exposto == false && pontos[xtemp + j][ytemp + i].flag == false)
+                if (getnumbombas(xtemp + j, ytemp + i,pontos) == 0 && pontos[xtemp + j][ytemp + i].exposto == false && pontos[xtemp + j][ytemp + i].flag == false)
                 {
                     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
                     SDL_Rect rect = {(xtemp + j + 1) * 20, (ytemp + j + 1) * 20, 20, 20};
@@ -230,7 +233,7 @@ void Game::getaround(int xfixo, int yfixo, int ladox, int ladoy, vector<vector<c
                     SDL_RenderPresent(renderer);
 
                     pontos[xtemp + j][ytemp + i].exposto = true;
-                    Game::getaround(xtemp + j, ytemp + i, ladox, ladoy, pontos);
+                    Game::getaround(xtemp + j, ytemp + i,pontos);
                 }
             }
         }
@@ -257,7 +260,7 @@ int Game::drawflag(int &numflags, int xfixo, int yfixo, vector<vector<cell>> &po
     }
 }
 
-bool Game::win(int numbombas, int ladox, int ladoy, vector<vector<cell>> &pontos)
+bool Game::win(vector<vector<cell>> &pontos)
 {
     int flags = 0;
     int exposed = 0;
@@ -367,16 +370,163 @@ void Game::GetTileMap(string file)
     }
 };
 
-void Game::Settings_Menu(int ladox,int ladoy)
+void Game::Settings_Menu(int percent_bombs,int ladox_temp)
 {
     SDL_SetRenderDrawColor(renderer, 21, 29, 40, 100);
     SDL_RenderClear(renderer);
 
-    draw_text("SETTINGS", 20, 20 , 199, 207, 204, 15, 20, 20, 232, 228, 227, 60, 40);
-    draw_text("X", (ladox * 20) + 10, 20 , 199, 207, 204, 15, (ladox * 20) + 10, 20, 232, 228, 227, 60, 40);
+    draw_text("SETTINGS", 20, 20, 199, 207, 204, 15, 20, 20, 21, 29, 40, 60, 40);
+    draw_text("X", (ladox * 20) + 10, 20, 199, 207, 204, 15, (ladox * 20) + 10, 20,21,29,40, 60, 40);
 
-    draw_text("NUMBER OF BOMBS", 20, 60 , 199, 207, 204, 15, 40, 20, 232, 228, 227, 60, 40);
-    draw_text("HEIGHT", 20, 110 , 199, 207, 204, 15, 80, 20, 232, 228, 227, 60, 40);
-    draw_text("WIDTH", 20, 160 , 199, 207, 204, 15, 120, 20, 232, 228, 227, 60, 40);
+    draw_text("NUMBER OF BOMBS", 20, 60, 199, 207, 204, 15, 40, 20, 21,29,40, 60, 40);
+    draw_text("HEIGHT", 20, 110, 199, 207, 204, 15, 80, 20, 21,29,40, 60, 40);
+    draw_text("WIDTH", 20, 160, 199, 207, 204, 15, 120, 20, 21,29,40, 60, 40);
 
+    Draw_Slider(1, percent_bombs, 20 + (percent_bombs*163/20),ladox_temp);
+    Draw_Slider(2, percent_bombs, 20,ladox_temp);
+    Draw_Slider(3, percent_bombs, 20,ladox_temp);
+};
+
+void Game::Draw_Slider(int slidernum, int percent_bombs,int sliderpos,int ladox_temp)
+{
+    // Sliders
+    SDL_SetRenderDrawColor(renderer,21,29,40,100);   
+
+    switch (slidernum)
+    {
+    case 1:
+    {
+        SDL_Rect bg1 = {20, 85, 160, 15};
+        SDL_RenderFillRect(renderer, &bg1);
+
+        SDL_SetRenderDrawColor(renderer, 199, 207, 204, 100);
+
+        SDL_Rect slide1 = {20, 90, 160, 5};
+        SDL_RenderFillRect(renderer, &slide1);
+
+        SDL_SetRenderDrawColor(renderer, 70, 130, 50, 100);
+
+        SDL_Rect slider1 = {sliderpos, 85, 7, 15};
+        SDL_RenderFillRect(renderer, &slider1);
+        SDL_RenderPresent(renderer);
+
+        draw_text("%", (ladox_temp * 20) + 10, 80, 199, 207, 204, 15,ladox_temp , 4,21,29,40, 30, 20);
+        draw_text(to_string(percent_bombs), (ladox_temp * 20) - 10, 80, 199, 207, 204, 15, ladox_temp - 1, 4, 21,29,40, 30, 20);
+
+        break;
+    }
+    case 2:
+    {
+        SDL_Rect bg2 = {20, 135, 160, 15};
+        SDL_RenderFillRect(renderer, &bg2);
+
+        SDL_SetRenderDrawColor(renderer, 199, 207, 204, 100);
+
+        SDL_Rect slide2 = {20, 140, 160, 5};
+        SDL_RenderFillRect(renderer, &slide2);
+
+        SDL_SetRenderDrawColor(renderer, 70, 130, 50, 100);
+
+        SDL_Rect slider2 = {sliderpos, 135, 7, 15};
+        SDL_RenderFillRect(renderer, &slider2);
+        SDL_RenderPresent(renderer);
+
+        draw_text(to_string(ladoy), (ladox_temp * 20) - 10, 130, 199, 207, 204, 15,ladox_temp - 1, 6, 21, 29,40,30, 40);
+
+        break;
+    }
+    case 3:
+    {
+        SDL_Rect bg3 = {20, 185, 160, 15};
+        SDL_RenderFillRect(renderer, &bg3);
+
+        SDL_SetRenderDrawColor(renderer, 199, 207, 204, 100);
+
+        SDL_Rect slide3 = {20, 190, 160, 5};
+        SDL_RenderFillRect(renderer, &slide3);
+
+        SDL_SetRenderDrawColor(renderer, 70, 130, 50, 100);
+
+        SDL_Rect slider3 = {sliderpos, 185, 7, 15};
+        SDL_RenderFillRect(renderer, &slider3);
+        SDL_RenderPresent(renderer);
+
+        draw_text(to_string(ladox), (ladox_temp * 20) - 10, 180, 199, 207, 204, 15, ladox_temp - 1, 9, 21,29,40, 50, 20);
+
+        break;
+    }
+    }
+};
+
+void Game::Settings_Menu_Loop()
+{
+    SDL_Event menu;
+    int quit = 0;
+    Uint32 buttons;
+    int ladox_temp = ladox;
+
+    int percent_bombs = numbombas * 100 / (ladox * ladoy);
+
+    Settings_Menu(percent_bombs,ladox_temp);
+
+    // Loop do Menu
+    while (quit == 0)
+    {
+        // While there's an event to handle
+        while (SDL_PollEvent(&event))
+        {
+            int xmouse, ymouse, xmouse_cord, ymouse_cord;
+
+            SDL_PumpEvents(); // make sure we have the latest mouse state.
+
+            buttons = SDL_GetMouseState(&xmouse, &ymouse);
+
+            xmouse_cord = (int)(xmouse / 20);
+            ymouse_cord = (int)(ymouse / 20);
+
+            // LEFT BUTTON CLICK
+            if ((buttons & SDL_BUTTON_LMASK) != 0)
+            {
+                if (xmouse_cord < ladox_temp + 1 && ymouse_cord < 2 && xmouse_cord > ladox_temp - 1 && ymouse_cord > 0)
+                {
+                    // Quit the program
+                    quit = 1;
+                }
+                //NUMBER OF BOMBS SLIDER
+                if(xmouse < 173 && ymouse < 100 && xmouse > 20 && ymouse > 85)
+                {
+                    percent_bombs = (xmouse-10)*20/163;
+                    numbombas = (double)((double)percent_bombs/100)*((double)ladox*ladoy);
+                    Draw_Slider(1, percent_bombs,xmouse,ladox_temp);
+                }
+                //HEIGHT SLIDER
+                if(xmouse < 173 && ymouse < 150 && xmouse > 20 && ymouse > 135)
+                {
+                    ladoy = 9 + (xmouse*15/160);
+                    Draw_Slider(2, percent_bombs,xmouse,ladox_temp);
+                }
+                //WIDTH SLIDER
+                if(xmouse < 173 && ymouse < 200 && xmouse > 20 && ymouse > 185)
+                {
+                    ladox = 9 + (xmouse*25/160);
+                    Draw_Slider(3, percent_bombs,xmouse,ladox_temp);
+                }
+            }
+        }
+    }
+}
+
+int Game::Get_ladox()
+{
+    return ladox;
+};
+
+int Game::Get_ladoy()
+{
+    return ladoy;
+};
+
+int Game::Get_numbombas()
+{
+    return numbombas;
 };
